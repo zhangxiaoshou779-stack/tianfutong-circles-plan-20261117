@@ -182,3 +182,14 @@ footer p+p{margin-top:3px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 @media print{.site-header,.hero-actions,.inline-detail summary,.download-link{display:none}.reading-column{max-width:none}.hero,.chapter{padding-top:20px}.platform-story,.circle-card,.flow-step{break-inside:avoid}.hero{padding-bottom:20px}body{background:white}.journey-panel{background:#eff5ff}details:not([open])>.detail-content{display:block}footer{padding-bottom:0}}
+
+/* Static UI appendix: images only, read from top to bottom. */
+.ui-appendix{border-top:1px solid var(--line);margin-top:30px;padding-top:30px}
+.ui-demo-note{font-size:14px;color:var(--muted);line-height:1.6;margin-top:-6px}
+.ui-figure{margin:30px 0 0;padding:0 0 29px;border-bottom:1px solid var(--line)}
+.ui-figure:last-child{border:0;padding-bottom:0}
+.ui-figure figcaption h3{font-size:23px;line-height:1.5}
+.ui-figure figcaption h3 span{color:var(--blue);margin-right:12px;font-size:19px}
+.ui-figure figcaption p{font-size:17px;color:var(--muted);line-height:1.6;margin-top:8px}
+.ui-figure>img{display:block;max-width:417px;width:100%;height:auto;margin:21px auto 0;cursor:default}
+@media(max-width:700px){.ui-appendix{margin-top:24px;padding-top:26px}.ui-demo-note{font-size:13px}.ui-figure{margin-top:25px;padding-bottom:24px}.ui-figure figcaption h3{font-size:20px}.ui-figure figcaption h3 span{font-size:17px;margin-right:8px}.ui-figure figcaption p{font-size:16px;margin-top:7px}.ui-figure>img{margin-top:17px}}
