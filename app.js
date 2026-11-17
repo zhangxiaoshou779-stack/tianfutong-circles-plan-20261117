@@ -83,47 +83,44 @@ const circles = [
   }
 ];
 
-const escapeHTML = (value) => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const list = document.getElementById("circle-list");
-list.innerHTML = circles.map((circle, i) => {
-  const e = escapeHTML;
-  const level = circle.rank === "priority" ? "优先验证" : "条件扩展";
-  return [
-    '<article class="circle-card" data-rank="' + e(circle.rank) + '" id="circle-' + e(circle.id) + '">',
-    '<div class="circle-heading"><span class="circle-num">' + String(i+1).padStart(2,"0") + '</span><div class="circle-title"><h3>' + e(circle.title) + '</h3><p class="circle-entry">' + e(circle.entry) + '</p></div><span class="level-tag ' + (circle.rank === "conditional" ? "conditional" : "") + '">' + level + '</span></div>',
-    '<div class="circle-body"><div><span class="cell-label">圈外客群与偏好</span><p>' + e(circle.audience) + '</p></div><div><span class="cell-label">第一场与具体动作</span><p>' + e(circle.action) + '</p></div><div><span class="cell-label">聚客与发展潜力</span><p>' + e(circle.potential) + '</p></div></div>',
-    '<details><summary><span>卡券任务、圈内发展与合作条件</span><span aria-hidden="true">＋</span></summary><div class="circle-details"><div><h4>卡券与线下任务</h4><p>' + e(circle.benefits) + '</p></div><div><h4>社群复参与与核心服务</h4><p>' + e(circle.community) + '</p></div><div><h4>必须验证的合作条件</h4><p>' + e(circle.conditions) + '</p></div></div></details></article>'
-  ].join("");
-}).join("");
 
-function setFilter(filter) {
-  let count = 0;
-  list.querySelectorAll(".circle-card").forEach(card => {
-    card.hidden = filter !== "all" && card.dataset.rank !== filter;
-    if (!card.hidden) count++;
-  });
-  document.querySelectorAll(".filter").forEach(button => {
-    const active = button.dataset.filter === filter;
-    button.classList.toggle("active",active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-  document.getElementById("scope-count").textContent = "显示 " + count + " 个" + (filter === "priority" ? "优先方向" : filter === "conditional" ? "条件扩展方向" : "候选方向");
+const blurbs = {
+  ip: '角色认同便于触达圈外人。先做主题手作或同好日，再用系列活动、联名卡和授权周边推动复参与。',
+  city: '想出门的人多，活动入口却分散。用短时街巷采风接新人，再以新线路、作品交流和主理人小队形成复参与。',
+  sport: '第一次解决“没搭子、没人带”。用零基础体验打开入口，再靠固定场次、同水平搭子和进阶课留住人。',
+  show: '把“不知道看哪场”变成一次有人带的观演。依托稳定演出供给，连接购票、票根福利与下一场。',
+  art: '先帮用户看懂一场展。通俗导览降低门槛，系列看展与馆方确认的会员体验承接进阶需求。',
+  family: '用适龄、可信的科普与博物体验连接家庭。先确认师资与组织服务，再发展系列主题和同行家庭。',
+  heritage: '从试穿、手作或节气雅集开始，让好奇者轻量入门。后续承接主题拍摄、技艺进阶与文化体验。',
+  pet: '用友好空间与专业活动吸引宠主。场地、携宠到达和参与规则要先确认，再做持续社交与品牌合作。',
+  watch: '按球队、战队或赛事连接同好。用入门观赛、主题活动形成首次参与，再沿赛季持续运营。'
+};
+const escapeHTML = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function circleHTML(circle, index) {
+  const e=escapeHTML;
+  const rows=[['客群与偏好',circle.audience],['第一场怎么做',circle.action],['卡券与线下任务',circle.benefits],['圈内发展与核心服务',circle.community],['潜力与合作条件',circle.potential+' '+circle.conditions]];
+  return '<article class="circle-card" id="circle-'+e(circle.id)+'"><div class="circle-top"><span class="circle-index">'+String(index+1).padStart(2,'0')+'</span><h3>'+e(circle.title)+'</h3></div><p class="circle-summary">'+e(blurbs[circle.id])+'</p><details><summary>展开客群、玩法与发展路径<img src="./assets/chevron-right.svg" alt=""></summary><div class="detail-content">'+rows.map(row=>'<div class="circle-detail-item"><h4>'+e(row[0])+'</h4><p>'+e(row[1])+'</p></div>').join('')+'</div></details></article>';
 }
-document.querySelectorAll(".filter").forEach(button => button.addEventListener("click", () => setFilter(button.dataset.filter)));
-setFilter("priority");
-
+document.getElementById('priority-circles').innerHTML=circles.filter(c=>c.rank==='priority').map((c,i)=>circleHTML(c,i)).join('');
+document.getElementById('extra-circles').innerHTML=circles.filter(c=>c.rank==='conditional').map((c,i)=>circleHTML(c,i+5)).join('');
 function revealReference(hash) {
   if (!/^#ref-\d+$/.test(hash)) return;
-  const reference = document.getElementById(hash.slice(1));
+  const reference=document.getElementById(hash.slice(1));
   if (!reference) return;
-  reference.closest("details").open = true;
-  requestAnimationFrame(() => reference.scrollIntoView({block:"start"}));
+  reference.closest('details').open=true;
+  requestAnimationFrame(()=>reference.scrollIntoView({block:'start'}));
 }
-document.querySelectorAll('a[href^="#ref-"]').forEach(link => link.addEventListener("click", () => revealReference(link.hash)));
-window.addEventListener("hashchange", () => revealReference(location.hash));
+document.querySelectorAll('a[href^="#ref-"]').forEach(link=>link.addEventListener('click',()=>revealReference(link.hash)));
+window.addEventListener('hashchange',()=>revealReference(location.hash));
 revealReference(location.hash);
-const backTop = document.querySelector(".back-top");
-function updateBackTop() { backTop.classList.toggle("visible", window.scrollY > 500); }
-window.addEventListener("scroll", updateBackTop, {passive:true});
-backTop.addEventListener("click", () => { window.scrollTo({top:0}); document.querySelector(".brand").focus({preventScroll:true}); });
-updateBackTop();
+const navigation=[...document.querySelectorAll('nav a')];
+const chapterObserver=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if (entry.isIntersecting) navigation.forEach(link=>{
+      const current=link.hash==='#'+entry.target.id;
+      link.classList.toggle('current',current);
+      if(current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');
+    });
+  });
+},{rootMargin:'-15% 0px -70% 0px',threshold:0});
+document.querySelectorAll('.chapter').forEach(chapter=>chapterObserver.observe(chapter));
