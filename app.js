@@ -113,6 +113,66 @@ function revealReference(hash) {
 document.querySelectorAll('a[href^="#ref-"]').forEach(link=>link.addEventListener('click',()=>revealReference(link.hash)));
 window.addEventListener('hashchange',()=>revealReference(location.hash));
 revealReference(location.hash);
+
+/* The proposal stays image-only; this viewer enlarges both image galleries. */
+(() => {
+  const viewer = document.getElementById('image-viewer');
+  const image = document.getElementById('viewer-image');
+  const stage = document.getElementById('viewer-stage');
+  const title = document.getElementById('viewer-title');
+  const groupLabel = document.getElementById('viewer-group');
+  const counter = document.getElementById('viewer-counter');
+  const previous = document.getElementById('viewer-prev');
+  const next = document.getElementById('viewer-next');
+  const zoom = document.getElementById('viewer-zoom');
+  let items = [];
+  let index = 0;
+  let opener = null;
+
+  const setZoom = expanded => {
+    stage.classList.toggle('is-zoomed', expanded);
+    zoom.setAttribute('aria-pressed', String(expanded));
+    zoom.textContent = expanded ? '适应屏幕宽度' : '原尺寸查看';
+    stage.scrollTop = 0;
+    stage.scrollLeft = 0;
+  };
+  const show = position => {
+    index = position;
+    const source = items[index].querySelector('img');
+    image.src = source.currentSrc || source.src;
+    image.alt = source.alt;
+    image.style.setProperty('--native-width', (source.naturalWidth || source.width) + 'px');
+    title.textContent = items[index].closest('figure').querySelector('h4').textContent.replace(/^(\d{2})/, '$1 / ');
+    counter.textContent = (index + 1) + ' / ' + items.length;
+    previous.disabled = index === 0;
+    next.disabled = index === items.length - 1;
+    setZoom(false);
+  };
+  image.addEventListener('load', () => image.style.setProperty('--native-width', image.naturalWidth + 'px'));
+  document.querySelectorAll('.ui-image-button').forEach(button => button.addEventListener('click', () => {
+    opener = button;
+    const gallery = button.closest('.ui-gallery');
+    items = Array.from(gallery.querySelectorAll('.ui-image-button'));
+    groupLabel.textContent = gallery.closest('.ui-gallery-block').querySelector('h3').childNodes[0].textContent.trim();
+    show(items.indexOf(button));
+    document.body.classList.add('viewer-open');
+    viewer.showModal();
+  }));
+  previous.addEventListener('click', () => { if (index > 0) show(index - 1); });
+  next.addEventListener('click', () => { if (index < items.length - 1) show(index + 1); });
+  zoom.addEventListener('click', () => setZoom(!stage.classList.contains('is-zoomed')));
+  document.getElementById('viewer-close').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
+  viewer.addEventListener('keydown', event => {
+    if (event.key === 'ArrowLeft' && !stage.classList.contains('is-zoomed') && index > 0) { event.preventDefault(); show(index - 1); }
+    if (event.key === 'ArrowRight' && !stage.classList.contains('is-zoomed') && index < items.length - 1) { event.preventDefault(); show(index + 1); }
+  });
+  viewer.addEventListener('close', () => {
+    document.body.classList.remove('viewer-open');
+    setZoom(false);
+    if (opener) opener.focus({preventScroll: true});
+  });
+})();
 const navigation=[...document.querySelectorAll('nav a')];
 const chapterObserver=new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
