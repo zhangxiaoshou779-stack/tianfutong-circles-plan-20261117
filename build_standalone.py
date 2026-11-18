@@ -4,12 +4,12 @@ import base64
 
 project = Path(__file__).resolve().parent
 workspace = project.parents[1]
-output = workspace / '交付文件' / '天府通圈子方案H5_熊猫风格可放大版_20261118.html'
+output = workspace / '交付文件' / '天府通圈子方案H5_五类首页拓展_20261118.html'
 html = (project / 'index.html').read_text(encoding='utf-8')
 css = (project / 'styles.css').read_text(encoding='utf-8')
 script = (project / 'app.js').read_text(encoding='utf-8')
-html = html.replace('<link rel="stylesheet" href="./styles.css?v=20261118-panda">', '<style>\n' + css + '\n</style>')
-html = html.replace('<script src="./app.js?v=20261118-panda"></script>', '<script>\n' + script + '\n</script>')
+html = html.replace('<link rel="stylesheet" href="./styles.css?v=20261118-homes5">', '<style>\n' + css + '\n</style>')
+html = html.replace('<script src="./app.js?v=20261118-homes5"></script>', '<script>\n' + script + '\n</script>')
 mime_types = {'.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png'}
 for asset in (project / 'assets').rglob('*'):
     if asset.suffix not in mime_types:
